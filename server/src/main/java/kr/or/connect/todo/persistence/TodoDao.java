@@ -23,6 +23,7 @@ public class TodoDao {
 	private RowMapper<Todo> rowMapper = BeanPropertyRowMapper.newInstance(Todo.class);
 	
 	private final String SELECT_LIST = "SELECT ID, TODO, COMPLETED, DATE FROM TODO ORDER BY DATE DESC";
+	private final String SELECT_BY_ID = "SELECT ID, TODO, COMPLETED, DATE FROM TODO WHERE id = :id";
 	private final String SELECT_COUNT_LEFT_ITEM = "SELECT COUNT(*) FROM TODO WHERE COMPLETED = 0";
 	private final String UPDATE_COMPLETED = "UPDATE todo SET completed = :completed WHERE id = :id";
 	private final String DELETE_BY_ID = "DELETE FROM todo WHERE id = :id";
@@ -32,16 +33,22 @@ public class TodoDao {
 		this.jdbc = new NamedParameterJdbcTemplate(dataSource);
 		this.insertAction = new SimpleJdbcInsert(dataSource)
 				.withTableName("todo")
-				.usingColumns("todo");
+				.usingColumns("todo")
+				.usingGeneratedKeyColumns("id");
 	}
 	
 	public Integer insert(Todo todo) {
 		SqlParameterSource params = new BeanPropertySqlParameterSource(todo);
-		return insertAction.execute(params);
+		return insertAction.executeAndReturnKey(params).intValue();
 	}
 	
 	public List<Todo> selectTodoList() {
 		return jdbc.query(SELECT_LIST, rowMapper);
+	}
+	
+	public Todo selectTodoById(Integer id) {
+		Map<String, ?> params = Collections.singletonMap("completed", 1);
+		return jdbc.queryForObject(SELECT_LIST, params, rowMapper);
 	}
 	
 	public Integer selectCountLeftItem() {

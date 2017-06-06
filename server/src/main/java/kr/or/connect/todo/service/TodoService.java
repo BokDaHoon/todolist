@@ -9,21 +9,16 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Service;
 
-import kr.or.connect.todo.config.AppConfig;
 import kr.or.connect.todo.domain.Todo;
 import kr.or.connect.todo.persistence.TodoDao;
 
 @Service
 public class TodoService {
 	
-	private ConfigurableApplicationContext context;
-	private DataSource dataSource;
 	private TodoDao dao;
 	
-	public TodoService() {
-		context = new AnnotationConfigApplicationContext(AppConfig.class);
-		dataSource = context.getBean(DataSource.class);
-		dao = new TodoDao(dataSource);
+	public TodoService(TodoDao dao) {
+		this.dao = dao;
 	}
 	
 	public void insertTodo(Map<String, Object> param) {

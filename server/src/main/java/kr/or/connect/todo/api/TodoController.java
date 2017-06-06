@@ -19,8 +19,12 @@ import kr.or.connect.todo.service.TodoService;
 @RestController
 @RequestMapping("/todo")
 public class TodoController {
+	private final TodoService service;
+	
 	@Autowired
-	TodoService service;
+	public TodoController(TodoService service) {
+		this.service = service;
+	}
 	
 	@GetMapping("/selectTodoList")
 	public List<Todo> selectTodoList() {
